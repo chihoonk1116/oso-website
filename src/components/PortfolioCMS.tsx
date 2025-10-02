@@ -19,6 +19,8 @@ interface PortfolioCMSProps {
 }
 
 const PortfolioCMS: React.FC<PortfolioCMSProps> = ({ isOpen, onClose }) => {
+  // For static deployments (GitHub Pages), set this to true to disable API calls
+  const DISABLE_API = true
   const [portfolios, setPortfolios] = useState<Portfolio[]>([])
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(null)
   const [isEditing, setIsEditing] = useState(false)
@@ -45,13 +47,31 @@ const PortfolioCMS: React.FC<PortfolioCMSProps> = ({ isOpen, onClose }) => {
   const loadPortfolios = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch('http://localhost:5000/api/portfolio')
-      const result = await response.json()
-      
-      if (result.success) {
-        setPortfolios(result.data)
+      if (DISABLE_API) {
+        // Static mode: provide mock portfolios
+        const mock = [
+          {
+            id: 'cityhall',
+            title: 'City Hall',
+            description: 'Mock portfolio for static deploy',
+            images: ['https://images.unsplash.com/photo-1555636222-cae831e670b3?q=80&w=2077&auto=format&fit=crop'],
+            client: 'City Planning Department',
+            year: '2024',
+            category: 'Architecture',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          }
+        ]
+        setPortfolios(mock)
       } else {
-        setError('Failed to load portfolios')
+        const response = await fetch('http://localhost:5000/api/portfolio')
+        const result = await response.json()
+        
+        if (result.success) {
+          setPortfolios(result.data)
+        } else {
+          setError('Failed to load portfolios')
+        }
       }
     } catch (err) {
       setError('Network error loading portfolios')
@@ -96,23 +116,29 @@ const PortfolioCMS: React.FC<PortfolioCMSProps> = ({ isOpen, onClose }) => {
         ? `http://localhost:5000/api/portfolio/${selectedPortfolio.id}` 
         : 'http://localhost:5000/api/portfolio'
       const method = selectedPortfolio ? 'PUT' : 'POST'
-      
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
-      
-      const result = await response.json()
-      
-      if (result.success) {
-        await loadPortfolios()
+      if (DISABLE_API) {
+        // Static mode: do not call backend. Simulate success and refresh list locally.
         setIsEditing(false)
         setSelectedPortfolio(null)
+        await loadPortfolios()
       } else {
-        setError(result.error || 'Failed to save portfolio')
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        })
+        
+        const result = await response.json()
+        
+        if (result.success) {
+          await loadPortfolios()
+          setIsEditing(false)
+          setSelectedPortfolio(null)
+        } else {
+          setError(result.error || 'Failed to save portfolio')
+        }
       }
     } catch (err) {
       setError('Network error saving portfolio')
@@ -127,16 +153,21 @@ const PortfolioCMS: React.FC<PortfolioCMSProps> = ({ isOpen, onClose }) => {
     
     setIsLoading(true)
     try {
-      const response = await fetch(`http://localhost:5000/api/portfolio/${id}`, {
-        method: 'DELETE'
-      })
-      
-      const result = await response.json()
-      
-      if (result.success) {
-        await loadPortfolios()
+      if (DISABLE_API) {
+        // Static mode: simulate deletion locally
+        setPortfolios(prev => prev.filter(p => p.id !== id))
       } else {
-        setError(result.error || 'Failed to delete portfolio')
+        const response = await fetch(`http://localhost:5000/api/portfolio/${id}`, {
+          method: 'DELETE'
+        })
+        
+        const result = await response.json()
+        
+        if (result.success) {
+          await loadPortfolios()
+        } else {
+          setError(result.error || 'Failed to delete portfolio')
+        }
       }
     } catch (err) {
       setError('Network error deleting portfolio')
@@ -183,6 +214,12 @@ const PortfolioCMS: React.FC<PortfolioCMSProps> = ({ isOpen, onClose }) => {
               ×
             </button>
           </div>
+
+          {DISABLE_API && (
+            <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-2 rounded mb-4">
+              Note: API calls are disabled in static deploy mode. Changes will not be persisted to a backend.
+            </div>
+          )}
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">

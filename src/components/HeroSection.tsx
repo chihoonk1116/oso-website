@@ -75,7 +75,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onPortfolioClick }) => {
             >
               <div className="relative w-full h-full">
                 <img 
-                  src="/main1.jpg"
+                  src={`${import.meta.env.BASE_URL}snap.jpg`}
                   alt="Grid Image 1" 
                   className="w-full h-full object-cover transition duration-500"
                 />
@@ -83,7 +83,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onPortfolioClick }) => {
                 <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 {/* Centered text that appears on hover with slide animation */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-xl md:text-2xl font-semibold text-white opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">Portfolio</span>
+                  <span className="uppercase text-xl md:text-2xl font-semibold text-white opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">snap</span>
                 </div>
               </div>
             </motion.div>
@@ -96,13 +96,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onPortfolioClick }) => {
             >
               <div className="relative w-full h-full">
                 <img 
-                  src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=600&h=400&fit=crop&crop=center"
+                  src={`${import.meta.env.BASE_URL}wedding.webp`}
                   alt="Grid Image 2" 
                   className="w-full h-full object-cover transition duration-500"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-xl md:text-2xl font-semibold text-white opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">Videos</span>
+                  <span className="text-xl md:text-2xl font-semibold text-white opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 uppercase">wedding</span>
                 </div>
               </div>
             </motion.div>
@@ -141,13 +141,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onPortfolioClick }) => {
             >
               <div className="relative w-full h-full">
                 <img 
-                  src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=600&h=400&fit=crop&crop=center"
+                  src={`${import.meta.env.BASE_URL}baby.jpeg`}
                   alt="Grid Image 3" 
                   className="w-full h-full object-cover transition duration-500"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-xl md:text-2xl font-semibold text-white opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">About</span>
+                  <span className="text-xl md:text-2xl font-semibold text-white opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 uppercase">baby</span>
                 </div>
               </div>
             </motion.div>
@@ -160,13 +160,13 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onPortfolioClick }) => {
             >
               <div className="relative w-full h-full">
                 <img 
-                  src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=600&h=400&fit=crop&crop=center"
+                  src={`${import.meta.env.BASE_URL}family.jpeg`}
                   alt="Grid Image 4" 
                   className="w-full h-full object-cover transition duration-500"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-40 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <span className="text-xl md:text-2xl font-semibold text-white opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">Inquire</span>
+                  <span className="text-xl md:text-2xl font-semibold text-white opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 uppercase">family</span>
                 </div>
               </div>
             </motion.div>

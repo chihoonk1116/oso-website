@@ -38,6 +38,9 @@ const PortfolioTemplate: React.FC<PortfolioTemplateProps> = ({
   onBack,
   isAdmin = false
 }) => {
+  // Set to true for static deployments (GitHub Pages) to avoid calling backend APIs
+  const DISABLE_API = true
+
   const [portfolio, setPortfolio] = useState<Portfolio | null>(initialPortfolio || null)
   const [isLoading, setIsLoading] = useState(!initialPortfolio)
   const [isAddingPhoto, setIsAddingPhoto] = useState(false)
@@ -56,38 +59,38 @@ const PortfolioTemplate: React.FC<PortfolioTemplateProps> = ({
   const loadPortfolio = async () => {
     setIsLoading(true)
     try {
-      const response = await fetch(`http://localhost:5000/api/portfolio/${portfolioId}`)
-      const result = await response.json()
-      
-      if (result.success) {
-        setPortfolio(result.data)
-      } else {
-        // Use mock data for development
-        const mockImages = [
-          'https://images.unsplash.com/photo-1555636222-cae831e670b3?q=80&w=2077&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1583422409516-2895a77efded?q=80&w=2070&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2096&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1571055107559-3e67626fa8be?q=80&w=2071&auto=format&fit=crop'
-        ]
-        
-        setPortfolio({
-          id: portfolioId,
-          title: 'City Hall',
-          description: 'An exploration of urban architecture and civic spaces, capturing the grandeur and intimate details of this iconic building.',
-          images: mockImages,
-          gridItems: mockImages.map(url => ({
-            url,
-            colSpan: 1,
-            rowSpan: 1
-          })),
-          client: 'City Planning Department',
-          year: '2024',
-          category: 'Architectural Photography',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        })
-      }
+        if (DISABLE_API) {
+          // Static mode: skip backend call and use mock data
+          const mockImages = [
+            'https://images.unsplash.com/photo-1555636222-cae831e670b3?q=80&w=2077&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1583422409516-2895a77efded?q=80&w=2070&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1582407947304-fd86f028f716?q=80&w=2096&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1571055107559-3e67626fa8be?q=80&w=2071&auto=format&fit=crop'
+          ]
+
+          setPortfolio({
+            id: portfolioId,
+            title: 'City Hall',
+            description: 'An exploration of urban architecture and civic spaces, capturing the grandeur and intimate details of this iconic building.',
+            images: mockImages,
+            gridItems: mockImages.map(url => ({
+              url,
+              colSpan: 1,
+              rowSpan: 1
+            })),
+            client: 'City Planning Department',
+            year: '2024',
+            category: 'Architectural Photography',
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          })
+        } else {
+          // Original fetch to backend (commented for static deploy)
+          // const response = await fetch(`http://localhost:5000/api/portfolio/${portfolioId}`)
+          // const result = await response.json()
+          // if (result.success) setPortfolio(result.data)
+        }
     } catch (err) {
       console.error('Error loading portfolio:', err)
       setError('Failed to load portfolio')
@@ -128,22 +131,29 @@ const PortfolioTemplate: React.FC<PortfolioTemplateProps> = ({
         ]
       }
       
-      const response = await fetch(`http://localhost:5000/api/portfolio/${portfolio.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedPortfolio)
-      })
-      
-      const result = await response.json()
-      
-      if (result.success) {
+      if (DISABLE_API) {
+        // Static mode: skip network and update local state only
         setPortfolio(updatedPortfolio)
         setNewPhotoUrl('')
         setIsAddingPhoto(false)
       } else {
-        setError('Failed to add photo')
+        const response = await fetch(`http://localhost:5000/api/portfolio/${portfolio.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedPortfolio)
+        })
+        
+        const result = await response.json()
+        
+        if (result.success) {
+          setPortfolio(updatedPortfolio)
+          setNewPhotoUrl('')
+          setIsAddingPhoto(false)
+        } else {
+          setError('Failed to add photo')
+        }
       }
     } catch (err) {
       console.error('Error adding photo:', err)
@@ -168,20 +178,25 @@ const PortfolioTemplate: React.FC<PortfolioTemplateProps> = ({
         updatedPortfolio.gridItems = portfolio.gridItems.filter((_, i) => i !== index)
       }
       
-      const response = await fetch(`http://localhost:5000/api/portfolio/${portfolio.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedPortfolio)
-      })
-      
-      const result = await response.json()
-      
-      if (result.success) {
+      if (DISABLE_API) {
+        // Static mode: update local state only
         setPortfolio(updatedPortfolio)
       } else {
-        setError('Failed to remove photo')
+        const response = await fetch(`http://localhost:5000/api/portfolio/${portfolio.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedPortfolio)
+        })
+        
+        const result = await response.json()
+        
+        if (result.success) {
+          setPortfolio(updatedPortfolio)
+        } else {
+          setError('Failed to remove photo')
+        }
       }
     } catch (err) {
       console.error('Error removing photo:', err)
@@ -220,16 +235,20 @@ const PortfolioTemplate: React.FC<PortfolioTemplateProps> = ({
         gridLayout: newGridLayout
       }
       
-      const response = await fetch(`http://localhost:5000/api/portfolio/${portfolio.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedPortfolio)
-      })
-      
-      if (response.ok) {
+      if (DISABLE_API) {
         setPortfolio(updatedPortfolio)
+      } else {
+        const response = await fetch(`http://localhost:5000/api/portfolio/${portfolio.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(updatedPortfolio)
+        })
+        
+        if (response.ok) {
+          setPortfolio(updatedPortfolio)
+        }
       }
     } catch (err) {
       console.error('Error saving grid layout:', err)
